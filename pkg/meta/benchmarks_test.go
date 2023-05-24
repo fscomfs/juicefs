@@ -18,9 +18,12 @@ package meta
 
 import (
 	"fmt"
+	"os"
 	"syscall"
 	"testing"
 	"time"
+
+	"gonum.org/v1/gonum/stat"
 
 	"github.com/juicedata/juicefs/pkg/utils"
 	"github.com/sirupsen/logrus"
@@ -644,4 +647,32 @@ func BenchmarkSQL(b *testing.B) {
 func BenchmarkTKV(b *testing.B) {
 	m := NewClient(tkvAddr, nil)
 	benchmarkAll(b, m)
+}
+
+// benchmarks_test.go:674: mkdir: mean: 24630.97, standard deviation: 20445.71
+func TestDgfAndRedis(t *testing.T) {
+	uri := os.Getenv("addr")
+	if uri == "" {
+		t.Skip("addr not set")
+	}
+	m := NewClient(uri, nil)
+	_ = m.Init(&Format{Name: "benchmarkAll"}, true)
+	_ = m.NewSession()
+	var parent, inode Ino
+	if err := prepareParent(m, "benchMkdir", &parent); err != nil {
+		t.Fatal(err)
+	}
+	var cost []float64
+	for i := 0; i < 100; i++ {
+		n := time.Now()
+		if err := m.Mkdir(Background, parent, fmt.Sprintf("d%d", i), 0755, 0, 0, &inode, nil); err != 0 {
+			t.Fatalf("mkdir: %s", err)
+		}
+		d := time.Since(n).Microseconds()
+		cost = append(cost, float64(d))
+		t.Logf("number: %2d: cost: %d us", i, d)
+	}
+	mean, std := stat.MeanStdDev(cost, nil)
+	t.Logf("--------------------test %s--------------------", uri)
+	t.Logf("mean: %.2f, standard deviation: %.2f", mean, std)
 }

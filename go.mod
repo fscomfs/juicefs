@@ -79,7 +79,10 @@ require (
 	xorm.io/xorm v1.0.7
 )
 
-require github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+require (
+	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	gonum.org/v1/gonum v0.13.0 // indirect
+)
 
 require (
 	cloud.google.com/go v0.102.1 // indirect
