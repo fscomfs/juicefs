@@ -106,7 +106,7 @@ func clientFlags() []cli.Flag {
 		},
 		&cli.IntFlag{
 			Name:  "max-deletes",
-			Value: 10,
+			Value: 30,
 			Usage: "number of threads to delete objects",
 		},
 		&cli.IntFlag{
