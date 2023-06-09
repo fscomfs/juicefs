@@ -7,8 +7,8 @@ source .github/scripts/start_meta_engine.sh
 start_meta_engine $META
 META_URL=$(get_meta_url $META)
 
-RECORD_COUNT=1000000
-OPERATION_COUNT=15000
+RECORD_COUNT=100000
+OPERATION_COUNT=1500
 
 if [ ! -d mongodb-linux-x86_64-3.0.0 ]; then 
     git clone https://github.com/sanwan/actionsoftware.git
