@@ -27,6 +27,7 @@ test_mango_db()
     ./juicefs format $META_URL myjfs --trash-days 0
     ./juicefs mount -d $META_URL /jfs --enable-xattr --cache-size 3072 --no-usage-report
     mkdir /jfs/mongodb/
+    exit 1
     nohup mongodb-linux-x86_64-3.0.0//bin/mongod --dbpath /jfs/mongodb &
     sed -i "s?recordcount=1000?recordcount=$RECORD_COUNT?" ycsb-0.5.0/workloads/workloadf
     sed -i "s?operationcount=1000?operationcount=$OPERATION_COUNT?" ycsb-0.5.0/workloads/workloadf
