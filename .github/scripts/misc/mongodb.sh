@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 python3 -c "import minio" || sudo pip install minio 
 source .github/scripts/common/common.sh
 
@@ -27,11 +27,13 @@ test_mango_db()
     ./juicefs format $META_URL myjfs --trash-days 0
     ./juicefs mount -d $META_URL /jfs --enable-xattr --cache-size 3072 --no-usage-report
     mkdir /jfs/mongodb/
-    exit 1
     nohup mongodb-linux-x86_64-3.0.0//bin/mongod --dbpath /jfs/mongodb &
+    sleep 3s
+    ps -aux | grep mongo
     sed -i "s?recordcount=1000?recordcount=$RECORD_COUNT?" ycsb-0.5.0/workloads/workloadf
     sed -i "s?operationcount=1000?operationcount=$OPERATION_COUNT?" ycsb-0.5.0/workloads/workloadf
-    cat ycsb-0.5.0/workloads/workloadf
+    grep recordcount ycsb-0.5.0/workloads/workloadf
+    grep operationcount ycsb-0.5.0/workloads/workloadf
     time ycsb-0.5.0/bin/ycsb load mongodb -s -P ycsb-0.5.0/workloads/workloadf  -threads 10 > outputLoad.txt
     ps -aux | grep mongo
     echo "run read modify write"
