@@ -9,20 +9,33 @@ source .github/scripts/common/common.sh
 source .github/scripts/start_meta_engine.sh
 start_meta_engine $META
 META_URL=$(get_meta_url $META)
-umask 000
 
 test_sync_with_mount_point(){
+    umask 022
     do_sync_with_mount_point 
     do_sync_with_mount_point --list-threads 10 --list-depth 5
     do_sync_with_mount_point --dirs --update --perms --check-all 
     do_sync_with_mount_point --dirs --update --perms --check-all --list-threads 10 --list-depth 5
+    umask 000
+    do_sync_with_mount_point 
+    do_sync_with_mount_point --list-threads 10 --list-depth 5
+    do_sync_with_mount_point --dirs --update --perms --check-all 
+    do_sync_with_mount_point --dirs --update --perms --check-all --list-threads 10 --list-depth 5
+    umask 022
 }
 
 test_sync_without_mount_point(){
+    umask 022
     do_sync_without_mount_point 
     do_sync_without_mount_point --list-threads 10 --list-depth 5
     do_sync_without_mount_point --dirs --update --perms --check-all 
     do_sync_without_mount_point --dirs --update --perms --check-all --list-threads 10 --list-depth 5
+    umask 000
+    do_sync_without_mount_point 
+    do_sync_without_mount_point --list-threads 10 --list-depth 5
+    do_sync_without_mount_point --dirs --update --perms --check-all 
+    do_sync_without_mount_point --dirs --update --perms --check-all --list-threads 10 --list-depth 5
+    umask 022
 }
 
 do_sync_without_mount_point(){
