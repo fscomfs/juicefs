@@ -38,9 +38,15 @@ do_sync_without_mount_point(){
     fi
     find /jfs/jfs_source -type f -name ".*.tmp*" -delete
     diff -ur --no-dereference  jfs_source/ /jfs/jfs_source
+    rm -rf /tmp/jfs_source
     if [[ "$options" =~ "--perms" ]]; then
-        diff <(cd jfs_source/ && find . -printf "%m\t%p\n" | sort) <(cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort)
+        cp -rp jfs_source/ /tmp/jfs_source/
+    else
+        cp -r jfs_source/ /tmp/jfs_source/
     fi
+    cd /tmp/jfs_source/ && find . -printf "%m\t%p\n" | sort -k2 >/tmp/jfs_source1.log && cd -
+    cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort -k2 >/tmp/jfs_source2.log && cd -
+    diff -u /tmp/jfs_source1.log /tmp/jfs_source2.log
 }
 
 do_sync_with_mount_point(){
@@ -56,9 +62,15 @@ do_sync_with_mount_point(){
     fi
     find /jfs/jfs_source -type f -name ".*.tmp*" -delete
     diff -ur --no-dereference jfs_source/ /jfs/jfs_source/
+    rm -rf /tmp/jfs_source
     if [[ "$options" =~ "--perms" ]]; then
-        diff <(cd jfs_source/ && find . -printf "%m\t%p\n" | sort) <(cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort)
+        cp -rp jfs_source/ /tmp/jfs_source/
+    else
+        cp -r jfs_source/ /tmp/jfs_source/
     fi
+    cd /tmp/jfs_source/ && find . -printf "%m\t%p\n" | sort -k2 >/tmp/jfs_source1.log && cd -
+    cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort -k2 >/tmp/jfs_source2.log && cd -
+    diff -u /tmp/jfs_source1.log /tmp/jfs_source2.log
 }
 
 
