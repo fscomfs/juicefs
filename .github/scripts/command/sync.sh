@@ -9,7 +9,7 @@ source .github/scripts/common/common.sh
 source .github/scripts/start_meta_engine.sh
 start_meta_engine $META
 META_URL=$(get_meta_url $META)
-
+umask 000
 
 test_sync_with_mount_point(){
     do_sync_with_mount_point 
@@ -38,6 +38,9 @@ do_sync_without_mount_point(){
     fi
     find /jfs/jfs_source -type f -name ".*.tmp*" -delete
     diff -ur --no-dereference  jfs_source/ /jfs/jfs_source
+    if [[ "$options" =~ "--perms" ]]; then
+        diff <(cd jfs_source/ && find . -printf "%m\t%p\n" | sort) <(cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort)
+    fi
 }
 
 do_sync_with_mount_point(){
@@ -53,6 +56,9 @@ do_sync_with_mount_point(){
     fi
     find /jfs/jfs_source -type f -name ".*.tmp*" -delete
     diff -ur --no-dereference jfs_source/ /jfs/jfs_source/
+    if [[ "$options" =~ "--perms" ]]; then
+        diff <(cd jfs_source/ && find . -printf "%m\t%p\n" | sort) <(cd /jfs/jfs_source/ && find . -printf "%m\t%p\n" | sort)
+    fi
 }
 
 
