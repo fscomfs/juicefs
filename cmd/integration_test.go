@@ -78,15 +78,13 @@ func startWebdav(t *testing.T) {
 func TestIntegration(t *testing.T) {
 	mountTemp(t, nil, nil, []string{"--enable-ioctl"})
 	defer umountTemp(t)
-	startGateway(t)
-	startWebdav(t)
+	//startGateway(t)
+	//startWebdav(t)
 	_ = os.Chdir("../integration")
 	makeCmd := exec.Command("make")
 	out, err := makeCmd.CombinedOutput()
+	t.Logf("std out:\n%s\n", string(out))
 	if err != nil {
-		t.Logf("std out:\n%s\n", string(out))
 		t.Fatalf("std err failed with %s\n", err)
-	} else {
-		t.Logf("std out:\n%s\n", string(out))
 	}
 }
