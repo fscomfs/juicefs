@@ -41,10 +41,6 @@ func (c *b2client) String() string {
 	return fmt.Sprintf("b2://%s/", c.bucket.Name)
 }
 
-func (c *b2client) Create() error {
-	return nil
-}
-
 func (c *b2client) getFileInfo(key string) (*backblaze.File, error) {
 	var f *backblaze.File
 	var r io.ReadCloser

@@ -42,10 +42,6 @@ func (w *webdav) String() string {
 	return fmt.Sprintf("webdav://%s/", w.endpoint.Host)
 }
 
-func (w *webdav) Create() error {
-	return nil
-}
-
 func (w *webdav) Head(key string) (Object, error) {
 	info, err := w.c.Stat(key)
 	if err != nil {

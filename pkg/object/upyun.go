@@ -41,10 +41,6 @@ func (u *up) String() string {
 	return fmt.Sprintf("upyun://%s/", u.c.Bucket)
 }
 
-func (u *up) Create() error {
-	return nil
-}
-
 func (u *up) Head(key string) (Object, error) {
 	info, err := u.c.GetInfo("/" + key)
 	if err != nil {
