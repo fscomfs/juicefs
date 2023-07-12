@@ -162,6 +162,7 @@ jobs:
               sudo bash -c  "echo 3 > /proc/sys/vm/drop_caches"
             fi
             echo "start fio"
+            echo "fio --name=$name --directory=$mount_point $fio_arg"
             fio --name=$name --directory=$mount_point $fio_arg > "$name-$juicefs_version.log"
             cat "$name-$juicefs_version.log"
             echo "finish fio"
