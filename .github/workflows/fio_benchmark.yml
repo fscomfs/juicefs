@@ -163,6 +163,7 @@ jobs:
             fi
             echo "start fio"
             fio --name=$name --directory=$mount_point $fio_arg > "$name-$juicefs_version.log"
+            cat "$name-$juicefs_version.log"
             echo "finish fio"
             bw_str=$(tail -1 $name-$juicefs_version.log | awk '{print $2}' | awk -F '=' '{print $2}' )
             bw=$(echo $bw_str | sed 's/.iB.*//g') 
