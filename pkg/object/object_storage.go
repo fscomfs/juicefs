@@ -282,7 +282,7 @@ func ListAllWithDelimiter(store ObjectStorage, prefix, start, end string) (<-cha
 }
 
 func init() {
-	ReqIDCache = reqIDCache{cache: make(map[string]reqItem)}
+	ReqIDCache = ObjReqIDCache{cache: make(map[string]reqItem)}
 	go ReqIDCache.clean()
 }
 
@@ -291,14 +291,14 @@ type reqItem struct {
 	time  time.Time
 }
 
-var ReqIDCache reqIDCache
+var ReqIDCache ObjReqIDCache
 
-type reqIDCache struct {
+type ObjReqIDCache struct {
 	sync.Mutex
 	cache map[string]reqItem
 }
 
-func (*reqIDCache) clean() {
+func (*ObjReqIDCache) clean() {
 	for range time.Tick(time.Second) {
 		ReqIDCache.Lock()
 		for k, v := range ReqIDCache.cache {
@@ -310,7 +310,7 @@ func (*reqIDCache) clean() {
 	}
 }
 
-func (*reqIDCache) put(key, reqID string) {
+func (*ObjReqIDCache) put(key, reqID string) {
 	if reqID == "" {
 		return
 	}
@@ -321,7 +321,7 @@ func (*reqIDCache) put(key, reqID string) {
 	}
 }
 
-func (*reqIDCache) Get(key string) string {
+func (*ObjReqIDCache) Get(key string) string {
 	if part := strings.Split(key, "chunks"); len(part) == 2 {
 		ReqIDCache.Lock()
 		defer ReqIDCache.Unlock()
