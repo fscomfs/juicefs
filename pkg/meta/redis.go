@@ -342,14 +342,14 @@ func (m *redisMeta) doNewSession(sinfo []byte) error {
 		return fmt.Errorf("set session info: %s", err)
 	}
 
-	if m.shaLookup, err = m.rdb.ScriptLoad(Background, scriptLookup).Result(); err != nil {
-		logger.Warnf("load scriptLookup: %v", err)
-		m.shaLookup = ""
-	}
-	if m.shaResolve, err = m.rdb.ScriptLoad(Background, scriptResolve).Result(); err != nil {
-		logger.Warnf("load scriptResolve: %v", err)
-		m.shaResolve = ""
-	}
+	//if m.shaLookup, err = m.rdb.ScriptLoad(Background, scriptLookup).Result(); err != nil {
+	//	logger.Warnf("load scriptLookup: %v", err)
+	//	m.shaLookup = ""
+	//}
+	//if m.shaResolve, err = m.rdb.ScriptLoad(Background, scriptResolve).Result(); err != nil {
+	//	logger.Warnf("load scriptResolve: %v", err)
+	//	m.shaResolve = ""
+	//}
 
 	if !m.conf.NoBGJob {
 		go m.cleanupLegacies()
