@@ -1047,6 +1047,14 @@ func Sync(src, dst object.ObjectStorage, config *Config) error {
 		if config.End != "" {
 			logger.Infof("last key: %q", config.End)
 		}
+		if config.ReportProcessAddr != "" {
+			go func() {
+				for {
+					sendSyncStatus(config.ReportProcessAddr, config.TaskKey)
+					time.Sleep(time.Second)
+				}
+			}()
+		}
 		config.concurrentList = make(chan int, config.ListThreads)
 		err := startProducer(tasks, src, dst, "", config)
 		if err != nil {
@@ -1080,6 +1088,7 @@ func Sync(src, dst object.ObjectStorage, config *Config) error {
 			msg += fmt.Sprintf(", failed: %d", failed.Current())
 		}
 		logger.Info(msg)
+		sendSyncStatus(config.ReportProcessAddr, config.TaskKey)
 	} else {
 		sendStats(config.Manager)
 	}

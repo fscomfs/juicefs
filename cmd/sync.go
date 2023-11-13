@@ -174,6 +174,14 @@ func syncActionFlags() []cli.Flag {
 			Name:  "dry",
 			Usage: "don't copy file",
 		},
+		&cli.StringFlag{
+			Name:  "report-precess-addr",
+			Usage: "report-precess-addr",
+		},
+		&cli.StringFlag{
+			Name:  "task-key",
+			Usage: "task-key",
+		},
 	})
 }
 

@@ -54,8 +54,10 @@ type Config struct {
 	CheckNew       bool
 	Env            map[string]string
 
-	rules          []rule
-	concurrentList chan int
+	rules             []rule
+	concurrentList    chan int
+	ReportProcessAddr string
+	TaskKey           string
 }
 
 func envList() []string {
@@ -129,35 +131,37 @@ func NewConfigFromCli(c *cli.Context) *Config {
 	}
 
 	cfg := &Config{
-		StorageClass:   c.String("storage-class"),
-		Start:          c.String("start"),
-		End:            c.String("end"),
-		Threads:        c.Int("threads"),
-		ListThreads:    c.Int("list-threads"),
-		ListDepth:      c.Int("list-depth"),
-		Update:         c.Bool("update"),
-		ForceUpdate:    c.Bool("force-update"),
-		Perms:          c.Bool("perms"),
-		Dirs:           c.Bool("dirs"),
-		Dry:            c.Bool("dry"),
-		DeleteSrc:      c.Bool("delete-src"),
-		DeleteDst:      c.Bool("delete-dst"),
-		Exclude:        c.StringSlice("exclude"),
-		Include:        c.StringSlice("include"),
-		Existing:       c.Bool("existing"),
-		IgnoreExisting: c.Bool("ignore-existing"),
-		Links:          c.Bool("links"),
-		Limit:          c.Int64("limit"),
-		Workers:        c.StringSlice("worker"),
-		ManagerAddr:    c.String("manager-addr"),
-		Manager:        c.String("manager"),
-		BWLimit:        c.Int("bwlimit"),
-		NoHTTPS:        c.Bool("no-https"),
-		Verbose:        c.Bool("verbose"),
-		Quiet:          c.Bool("quiet"),
-		CheckAll:       c.Bool("check-all"),
-		CheckNew:       c.Bool("check-new"),
-		Env:            make(map[string]string),
+		StorageClass:      c.String("storage-class"),
+		Start:             c.String("start"),
+		End:               c.String("end"),
+		Threads:           c.Int("threads"),
+		ListThreads:       c.Int("list-threads"),
+		ListDepth:         c.Int("list-depth"),
+		Update:            c.Bool("update"),
+		ForceUpdate:       c.Bool("force-update"),
+		Perms:             c.Bool("perms"),
+		Dirs:              c.Bool("dirs"),
+		Dry:               c.Bool("dry"),
+		DeleteSrc:         c.Bool("delete-src"),
+		DeleteDst:         c.Bool("delete-dst"),
+		Exclude:           c.StringSlice("exclude"),
+		Include:           c.StringSlice("include"),
+		Existing:          c.Bool("existing"),
+		IgnoreExisting:    c.Bool("ignore-existing"),
+		Links:             c.Bool("links"),
+		Limit:             c.Int64("limit"),
+		Workers:           c.StringSlice("worker"),
+		ManagerAddr:       c.String("manager-addr"),
+		Manager:           c.String("manager"),
+		BWLimit:           c.Int("bwlimit"),
+		NoHTTPS:           c.Bool("no-https"),
+		Verbose:           c.Bool("verbose"),
+		Quiet:             c.Bool("quiet"),
+		CheckAll:          c.Bool("check-all"),
+		CheckNew:          c.Bool("check-new"),
+		ReportProcessAddr: c.String("report-precess-addr"),
+		TaskKey:           c.String("task-key"),
+		Env:               make(map[string]string),
 	}
 	if cfg.Threads <= 0 {
 		logger.Warnf("threads should be larger than 0, reset it to 1")

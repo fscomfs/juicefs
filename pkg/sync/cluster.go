@@ -48,6 +48,23 @@ type Stat struct {
 	Failed       int64 // the number of files that fail to copy
 }
 
+type ProcessStat struct {
+	Copied       StatS // the number of copied files
+	CopiedBytes  StatS // total amount of copied data in bytes
+	Checked      StatS // the number of checked files
+	CheckedBytes StatS // total amount of checked data in bytes
+	Deleted      StatS // the number of deleted files
+	Skipped      StatS // the number of files skipped
+	Failed       StatS // the number of files that fail to copy
+	Key          string
+}
+
+type StatS struct {
+	Total       int64 // the number of copied files
+	Current     int64
+	IsCompleted bool
+}
+
 func updateStats(r *Stat) {
 	copied.IncrInt64(r.Copied)
 	copiedBytes.IncrInt64(r.CopiedBytes)
@@ -81,6 +98,57 @@ func httpRequest(url string, body []byte) (ans []byte, err error) {
 	}
 	defer resp.Body.Close()
 	return io.ReadAll(resp.Body)
+}
+
+func sendSyncStatus(addr string, key string) {
+	var r ProcessStat
+	r.Skipped = StatS{
+		Total:       skipped.Total(),
+		Current:     skipped.Current(),
+		IsCompleted: skipped.Completed(),
+	}
+	r.Copied = StatS{
+		Total:       copied.Total(),
+		Current:     copied.Current(),
+		IsCompleted: copied.Completed(),
+	}
+	r.CopiedBytes = StatS{
+		Total:       copiedBytes.Total(),
+		Current:     copiedBytes.Current(),
+		IsCompleted: copiedBytes.Completed(),
+	}
+	if checked != nil {
+		r.Checked = StatS{
+			Total:       checked.Total(),
+			Current:     checked.Current(),
+			IsCompleted: checked.Completed(),
+		}
+		r.CheckedBytes = StatS{
+			Total:       checkedBytes.Total(),
+			Current:     checkedBytes.Current(),
+			IsCompleted: checkedBytes.Completed(),
+		}
+	}
+	if deleted != nil {
+		r.Deleted = StatS{
+			Total:       deleted.Total(),
+			Current:     deleted.Current(),
+			IsCompleted: deleted.Completed(),
+		}
+	}
+	if failed != nil {
+		r.Failed = StatS{
+			Total:       failed.Total(),
+			Current:     failed.Current(),
+			IsCompleted: failed.Completed(),
+		}
+	}
+	r.Key = key
+	d, _ := json.Marshal(r)
+	ans, err := httpRequest(fmt.Sprintf("http://%s/processState", addr), d)
+	if err != nil || string(ans) != "OK" {
+		logger.Errorf("update stats: %s %s", string(ans), err)
+	}
 }
 
 func sendStats(addr string) {

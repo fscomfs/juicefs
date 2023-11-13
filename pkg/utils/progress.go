@@ -41,6 +41,9 @@ func (b *Bar) IncrTotal(n int64) { // not thread safe
 	b.total += n
 	b.Bar.SetTotal(b.total, false)
 }
+func (b *Bar) Total() int64 { // not thread safe
+	return b.total
+}
 
 func (b *Bar) SetTotal(total int64) { // not thread safe
 	b.total = total
