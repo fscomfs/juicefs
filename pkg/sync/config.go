@@ -159,7 +159,7 @@ func NewConfigFromCli(c *cli.Context) *Config {
 		Quiet:             c.Bool("quiet"),
 		CheckAll:          c.Bool("check-all"),
 		CheckNew:          c.Bool("check-new"),
-		ReportProcessAddr: c.String("report-precess-addr"),
+		ReportProcessAddr: c.String("report-process-addr"),
 		TaskKey:           c.String("task-key"),
 		Env:               make(map[string]string),
 	}
