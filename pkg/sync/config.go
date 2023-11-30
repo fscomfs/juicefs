@@ -57,6 +57,7 @@ type Config struct {
 	rules             []rule
 	concurrentList    chan int
 	ReportProcessAddr string
+	PV                string
 	TaskKey           string
 }
 
@@ -160,6 +161,7 @@ func NewConfigFromCli(c *cli.Context) *Config {
 		CheckAll:          c.Bool("check-all"),
 		CheckNew:          c.Bool("check-new"),
 		ReportProcessAddr: c.String("report-process-addr"),
+		PV:                c.String("pv"),
 		TaskKey:           c.String("task-key"),
 		Env:               make(map[string]string),
 	}

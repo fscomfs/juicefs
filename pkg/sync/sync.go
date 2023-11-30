@@ -1047,10 +1047,10 @@ func Sync(src, dst object.ObjectStorage, config *Config) error {
 		if config.End != "" {
 			logger.Infof("last key: %q", config.End)
 		}
-		if config.ReportProcessAddr != "" {
+		if config.ReportProcessAddr != "" && config.PV != "" && config.TaskKey != "" {
 			go func() {
 				for {
-					sendSyncStatus(config.ReportProcessAddr, config.TaskKey)
+					sendSyncStatus(config.ReportProcessAddr, config.PV, config.TaskKey)
 					time.Sleep(time.Second)
 				}
 			}()
@@ -1088,7 +1088,9 @@ func Sync(src, dst object.ObjectStorage, config *Config) error {
 			msg += fmt.Sprintf(", failed: %d", failed.Current())
 		}
 		logger.Info(msg)
-		sendSyncStatus(config.ReportProcessAddr, config.TaskKey)
+		if config.ReportProcessAddr != "" && config.PV != "" && config.TaskKey != "" {
+			sendSyncStatus(config.ReportProcessAddr, config.PV, config.TaskKey)
+		}
 	} else {
 		sendStats(config.Manager)
 	}

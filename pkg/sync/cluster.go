@@ -49,20 +49,22 @@ type Stat struct {
 }
 
 type ProcessStat struct {
-	Copied       StatS // the number of copied files
-	CopiedBytes  StatS // total amount of copied data in bytes
-	Checked      StatS // the number of checked files
-	CheckedBytes StatS // total amount of checked data in bytes
-	Deleted      StatS // the number of deleted files
-	Skipped      StatS // the number of files skipped
-	Failed       StatS // the number of files that fail to copy
-	Key          string
+	Handled      int64  `json:"handled"`
+	Copied       int64  `json:"copied"`        // the number of copied files
+	CopiedBytes  int64  `json:"copied_bytes"`  // total amount of copied data in bytes
+	Checked      int64  `json:"checked"`       // the number of checked files
+	CheckedBytes int64  `json:"checked_bytes"` // total amount of checked data in bytes
+	Deleted      int64  `json:"deleted"`       // the number of deleted files
+	Skipped      int64  `json:"skipped"`       // the number of files skipped
+	Failed       int64  `json:"failed"`        // the number of files that fail to copy
+	SourcePath   string `json:"source_path"`
+	PV           string `json:"pv"`
 }
 
 type StatS struct {
-	Total       int64 // the number of copied files
-	Current     int64
-	IsCompleted bool
+	Total       int64 `json:"total"` // the number of copied files
+	Current     int64 `json:"current"`
+	IsCompleted bool  `json:"is_completed"`
 }
 
 func updateStats(r *Stat) {
@@ -100,54 +102,34 @@ func httpRequest(url string, body []byte) (ans []byte, err error) {
 	return io.ReadAll(resp.Body)
 }
 
-func sendSyncStatus(addr string, key string) {
+func sendSyncStatus(addr string, pv, sourcePath string) {
 	var r ProcessStat
-	r.Skipped = StatS{
-		Total:       skipped.Total(),
-		Current:     skipped.Current(),
-		IsCompleted: skipped.Completed(),
-	}
-	r.Copied = StatS{
-		Total:       copied.Total(),
-		Current:     copied.Current(),
-		IsCompleted: copied.Completed(),
-	}
-	r.CopiedBytes = StatS{
-		Total:       copiedBytes.Total(),
-		Current:     copiedBytes.Current(),
-		IsCompleted: copiedBytes.Completed(),
-	}
+	r.Skipped = skipped.Current()
+	r.Copied = copied.Current()
+	r.Handled = handled.Current()
+	r.CopiedBytes = copiedBytes.Current()
 	if checked != nil {
-		r.Checked = StatS{
-			Total:       checked.Total(),
-			Current:     checked.Current(),
-			IsCompleted: checked.Completed(),
-		}
-		r.CheckedBytes = StatS{
-			Total:       checkedBytes.Total(),
-			Current:     checkedBytes.Current(),
-			IsCompleted: checkedBytes.Completed(),
-		}
+		r.Checked = checked.Current()
+		r.CheckedBytes = checkedBytes.Current()
 	}
 	if deleted != nil {
-		r.Deleted = StatS{
-			Total:       deleted.Total(),
-			Current:     deleted.Current(),
-			IsCompleted: deleted.Completed(),
-		}
+		r.Deleted = deleted.Current()
 	}
 	if failed != nil {
-		r.Failed = StatS{
-			Total:       failed.Total(),
-			Current:     failed.Current(),
-			IsCompleted: failed.Completed(),
-		}
+		r.Failed = failed.Current()
 	}
-	r.Key = key
+	r.SourcePath = sourcePath
+	r.PV = pv
 	d, _ := json.Marshal(r)
-	ans, err := httpRequest(fmt.Sprintf("http://%s/processState", addr), d)
+	var url string
+	if strings.HasPrefix(addr, "http") {
+		url = fmt.Sprintf("%s/processState", addr)
+	} else {
+		url = fmt.Sprintf("http://%s/processState", addr)
+	}
+	ans, err := httpRequest(url, d)
 	if err != nil || string(ans) != "OK" {
-		logger.Errorf("update stats: %s %s", string(ans), err)
+		logger.Errorf("update stats: %s %v", string(ans), err)
 	}
 }
 
