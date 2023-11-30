@@ -182,6 +182,10 @@ func syncActionFlags() []cli.Flag {
 			Name:  "task-key",
 			Usage: "task-key",
 		},
+		&cli.StringFlag{
+			Name:  "pv",
+			Usage: "pv",
+		},
 	})
 }
 
