@@ -128,7 +128,7 @@ func sendSyncStatus(addr string, pv, sourcePath string) {
 		url = fmt.Sprintf("http://%s/processState", addr)
 	}
 	ans, err := httpRequest(url, d)
-	if err != nil || string(ans) != "OK" {
+	if err != nil {
 		logger.Errorf("update stats: %s %v", string(ans), err)
 	}
 }
